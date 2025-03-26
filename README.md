@@ -1,4 +1,4 @@
-- User, Post, Comment
+- User, Article, Comment
 
 
 # 00. setting
@@ -282,7 +282,7 @@ def logout(request):
     return redirect('accounts:login')
 ```
 
-## 3-5. 로그인 상태에 따른 navbar 설정
+## 3-5. 로그인 상태에 따른 navbar 구조 변경
 - `templates/base.html`
 ```html
 <body>
@@ -302,4 +302,7 @@ def logout(request):
 </body>
 ```
 
-# 04. 
+# 04. Article
+## 4-1. articles 앱 만들기
+- `django-admin startapp articles`
+- `auth/settings.py`에 앱 등록
