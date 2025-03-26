@@ -332,3 +332,133 @@ class Article(models.Model):
 - `python manage.py makemigrations`
 - `python manage.py migrate`
 
+## 4-4. Article Read(all)
+- `auth/urls.py`
+```python
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('accounts/', include('accounts.urls')),
+    path('articles/', include('articles.urls')),
+]
+```
+- `articles/urls.py` 파일 생성
+```python
+from django.urls import path
+from . import views
+
+app_name = 'articles'
+
+urlpatterns = [
+    path('', views.index, name='index'), 
+]
+```
+- `articles/views.py`
+```python
+def index(request):
+    return render(request, 'index.html')
+```
+- `articles/templates/index.html` 폴더랑 파일 생성
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    <h1>index</h1>
+{% endblock %}
+```
+
+## 4-5. Article Create
+- `templates/base.html`
+```html
+<body>
+    <nav class="nav">
+        {% if user.is_authenticated %} <!--is_authenticated : 인증됐니?-->
+            <a href="" class="nav-link disabled">{{user}}</a>
+            <a href="{% url 'articles:create' %}" class="nav-link">create</a>
+            <a href="{% url 'accounts:logout' %}" class="nav-link">logout</a>
+
+        {% else %}
+            ...
+
+        {% endif %}
+    
+    </nav>
+    ...
+</body>
+```
+- `articles/urls.py`
+```python
+urlpatterns = [
+    path('', views.index, name='index'), 
+    path('create/', views.create, name='create'),
+]
+```
+- `articles/views.py`
+```python
+def create(request):
+    if request.method == 'POST':
+        pass
+    else:
+        pass
+```
+- `articles/forms.py` 파일 생성
+```python
+from django.forms import ModelForm
+from .models import Article
+
+class ArticleForm(ModelForm):
+    class Meta():
+        model = Article
+        fields = '__all__'
+```
+- `articles/views.py`
+```python
+from .forms import ArticleForm
+
+def create(request):
+    if request.method == 'POST':
+        pass
+    else:
+        form = ArticleForm()
+    
+    context = {
+        'form': form,
+    }
+    return render(request, 'create.html', context)
+```
+- `articles/templates/create.html` 파일 생성
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    <form action="" method="POST">
+        {% csrf_token%}
+        {{form}}
+        <input type="submit" class="mt-3">
+    </form>
+{% endblock %}
+```
+- `articles/forms.py` : user 보이지 않게 설정
+```python
+class ArticleForm(ModelForm):
+    class Meta():
+        model = Article
+        # fields = '__all__'
+        
+        # fields = ('title', 'content', )
+        exclude = ('user', )
+```
+- `articles/views.py` : if문 채우기
+```python
+from django.shortcuts import render, redirect
+
+def create(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            article = form.save(commit=False) # 임시저장, user정보가 없음(title, content만 있음)
+            article.user = request.user # request.user에는 로그인한 사람의 정보가 들어있음
+            article.save()
+            return redirect('articles:index')
+    else:
+        ...
+```

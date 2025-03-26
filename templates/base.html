@@ -10,6 +10,7 @@
     <nav class="nav">
         {% if user.is_authenticated %} <!--is_authenticated : 인증됐니?-->
             <a href="" class="nav-link disabled">{{user}}</a>
+            <a href="{% url 'articles:create' %}" class="nav-link">create</a>
             <a href="{% url 'accounts:logout' %}" class="nav-link">logout</a>
 
         {% else %}
