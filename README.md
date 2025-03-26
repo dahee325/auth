@@ -36,3 +36,28 @@
 </body>
 </html>
 ```
+
+# 03. [User](https://docs.djangoproject.com/en/5.1/topics/auth/customizing/)
+## 3-1. Modeling
+- `accounts/models.py` : 장고가 미리 만들어놓은 앱스트립트 사용\
+=> 변수를 추가하고싶으면 `User`클래스 안에 선언
+```python
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    pass 
+    # phone = models.~~ # 다른 변수 추가
+```
+- `auth/settings.py` : 장고가 만든 관리자 창의 User말고 내가 만든 User 사용할 것이라고 알려줌
+```python
+...
+AUTH_USER_MODEL = 'accounts.User' # 대소문자 주의
+```
+
+## 3-2. Migratioin
+- `python manage.py makemigrations`
+- `python manage.py migrate`
+
+## 3-3. UserForm
+- `auth/urls.py`
