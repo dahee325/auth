@@ -479,7 +479,7 @@ def index(request):
 ```html
 {% block body %}
     <h1>index</h1>
-    
+
     {% for article in articles %}
         <h3>{{article.title}}</h3>
         <p>{{article.content}}</p>
@@ -487,4 +487,51 @@ def index(request):
         <hr>
     {% endfor %}
 {% endblock %}
+```
+
+## 4-7. 로그인 상태에 따른 게시물 작성
+- `articles/views.py`
+```python
+from django.contrib.auth.decorators import login_required
+# decorators : 함수가 실행되기 전에 먼저 실행라하는 의미
+# login_required : 로그인이 되어있으면 진행, 안되어있으면 진행x
+
+@login_required
+def create(request):
+    ...
+```
+
+### accounts/login 경로 다시 설정
+- `accounts/views.py`
+```python
+def login(request):
+    if request.method == 'POST':
+        ...
+        if form.is_valid():
+            # user정보를 담았기 때문에 바로 저장하지 않음
+            auth_login(request, form.get_user())
+            return redirect('articles:index')
+    else:
+        ...
+```
+
+## 4-8. next 인자 처리
+- `accounts/views.py`
+```python
+def login(request):
+    if request.method == 'POST':
+        ...
+        if form.is_valid():
+            # user정보를 담았기 때문에 바로 저장하지 않음
+            auth_login(request, form.get_user())
+
+            # /accounts/login/
+            # /accounts/login/?next=/articles/create
+            next_url = request.GET.get('next') # get() : 있으면 next인자 반환, 없으면 none
+
+            # next가 없을 때 => none or 'articles:index'
+            # next가 있을 때 => 'articles/create' or 'articles:index'
+            return redirect(next_url or 'articles:index')
+    else:
+        ...
 ```

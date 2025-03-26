@@ -27,7 +27,14 @@ def login(request):
         if form.is_valid():
             # user정보를 담았기 때문에 바로 저장하지 않음
             auth_login(request, form.get_user())
-            return redirect('accounts:login')
+
+            # /accounts/login/
+            # /accounts/login/?next=/articles/create
+            next_url = request.GET.get('next') # get() : 있으면 next인자 반환, 없으면 none
+
+            # next가 없을 때 => none or 'articles:index'
+            # next가 있을 때 => 'articles/create' or 'articles:index'
+            return redirect(next_url or 'articles:index')
     else:
         form = CustomAuthenticationForm()
 
