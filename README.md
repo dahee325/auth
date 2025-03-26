@@ -332,7 +332,7 @@ class Article(models.Model):
 - `python manage.py makemigrations`
 - `python manage.py migrate`
 
-## 4-4. Article Read(all)
+## 4-4. Article
 - `auth/urls.py`
 ```python
 urlpatterns = [
@@ -461,4 +461,30 @@ def create(request):
             return redirect('articles:index')
     else:
         ...
+```
+
+## 4-6. Article Read
+- `articles/views.py`
+```python
+from .models import Article
+
+def index(request):
+    articles = Article.objects.all()
+    context = {
+        'articles': articles,
+    }
+    return render(request, 'index.html', context)
+```
+- `articles/templates/index.html`
+```html
+{% block body %}
+    <h1>index</h1>
+    
+    {% for article in articles %}
+        <h3>{{article.title}}</h3>
+        <p>{{article.content}}</p>
+        <p>{{article.user}}</p>
+        <hr>
+    {% endfor %}
+{% endblock %}
 ```
