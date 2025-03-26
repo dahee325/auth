@@ -245,3 +245,39 @@ def login(request):
     else:
         ...
 ```
+
+## 3-5. 링크 달기
+- `templates/base.html`
+```html
+<body>
+    <nav class="nav">
+        <a href="" class="nav-link disabled">{{user}}</a>
+        <!--context에 user를 넣지 않아도 user는 기본적으로 사용할 수 있음-->
+        <a href="{% url 'accounts:signup' %}" class="nav-link">signup</a>
+        <a href="(% url 'accounts:login' %)" class="nav-link">login</a>
+        <a href="{% url 'accounts:logout' %}" class="nav-link">logout</a>
+    </nav>
+    <div class="container">
+        {% block body %}
+        {% endblock %}
+    </div>
+```
+
+## 3-4. Logout 기능 만들기
+- `accounts/urls.py`
+```python
+urlpatterns = [
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.login, name='login'), 
+    path('logout/', views.logout, name='logout',),
+]
+```
+- `accounts/views.py`
+```python
+from django.contrib.auth import logout as auth_logout
+
+def logout(request):
+    auth_logout(request)
+
+    return redirect('accounts:login')
+```
