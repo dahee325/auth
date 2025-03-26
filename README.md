@@ -45,9 +45,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-class User(AbstractUser):
+# 변수가 추가되는 등 나중에 확장될 경우를 대비해 미리 모델 확장
+class User(AbstractUser): 
     pass 
-    # phone = models.~~ # 다른 변수 추가
+    # phone = models.~~ # 나중에 model에 추가하기만 하면 됨
 ```
 - `auth/settings.py` : 장고가 만든 관리자 창의 User말고 내가 만든 User 사용할 것이라고 알려줌
 ```python
@@ -59,5 +60,107 @@ AUTH_USER_MODEL = 'accounts.User' # 대소문자 주의
 - `python manage.py makemigrations`
 - `python manage.py migrate`
 
-## 3-3. UserForm
-- `auth/urls.py`
+## 3-3. 로그인 기능 만들기 (Create)
+- `auth/urls.py` : 경로 설정
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('accounts/', include('accounts.urls'))
+]
+```
+- `accounts/urls.py` 파일 생성
+```python
+from django.urls import path
+from . import views
+
+app_name = 'accounts'
+
+urlpatterns = [
+    path('signup/', views.signup, name='signup')
+]
+```
+- `accounts/views.py`
+```python
+from django.shortcuts import render
+
+# Create your views here.
+def signup(request):
+    if request.method == 'POST':
+        pass
+    else:
+        form = UserForm()
+```
+- `accounts/forms.py` 파일 생성 => 장고가 만들어놓은 form 그대로 사용
+```python
+from .models import User
+from django.contrib.auth.forms import UserCreationForm
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta():
+        model = User 
+        # 장고가 만들어놓은 UserCreationForm에서 model만 우리가 만든 USer로 바꿈
+        fields = '__all__'
+```
+- `accounts/views.py`
+```python
+from django.shortcuts import render
+from .forms import CustomUserCreationForm
+
+# Create your views here.
+def signup(request):
+    if request.method == 'POST':
+        pass
+    else:
+        form = CustomUserCreationForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'signup.html', context)
+```
+- `accounts/templates/signup.html`
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    {{form}}
+
+{% endblock %}
+```
+- `accounts/forms.py`
+```python
+class CustomUserCreationForm(UserCreationForm):
+    class Meta():
+        model = User 
+        # 장고가 만들어놓은 UserCreationForm에서 model만 우리가 만든 USer로 바꿈
+        # fields = '__all__'
+        fields = ('username', )
+```
+- `accounts/templates/signup.html`
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+<form action="" method="POST">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit">
+</form>
+{% endblock %}
+```
+- `accounts/views.py` : if문 채우기(저장)
+```python
+from django.shortcuts import render, redirect
+
+def signup(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:login')
+
+    else:
+        ...
+```
