@@ -60,14 +60,14 @@ AUTH_USER_MODEL = 'accounts.User' # 대소문자 주의
 - `python manage.py makemigrations`
 - `python manage.py migrate`
 
-## 3-3. 로그인 기능 만들기 (Create)
+## 3-3. Signup 기능 만들기 (Create)
 - `auth/urls.py` : 경로 설정
 ```python
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls'))
+    path('accounts/', include('accounts.urls')),
 ]
 ```
 - `accounts/urls.py` 파일 생성
@@ -78,7 +78,7 @@ from . import views
 app_name = 'accounts'
 
 urlpatterns = [
-    path('signup/', views.signup, name='signup')
+    path('signup/', views.signup, name='signup'),
 ]
 ```
 - `accounts/views.py`
@@ -161,6 +161,87 @@ def signup(request):
             form.save()
             return redirect('accounts:login')
 
+    else:
+        ...
+```
+    ### Hash
+    - **해시 함수(hash function)** : 임의의 길이를 가진 데이터를 입력받아 고정된 길이의 값, 즉 해시값을 출력하는 함수
+    - [SHA1 HASH](http://www.sha1-online.com/)
+    - rainbow table : 모든 해시의 경우의수를 모아놓은 테이블
+    - 비밀번호를 해시함수로 바꾸면 해시를 비밀번호로 바꿀 수 없음 => 해시함수 경우의 수를 하나하나 해보면서 비밀번호를 찾아봐야함
+
+
+## 3-4. Login 기능 만들기 (Create)
+- 내 데이터를 주고 전체 데이터를 받음
+- `accounts/urls.py` : 경로 설정
+```python
+app_name = 'accounts'
+
+urlpatterns = [
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.login, name='login'), 
+]
+```
+    ### 개발자도구 Cookies
+    -  웹사이트 개발자도구의 `Application/Storage/Cookies` : 인터넷(크롬, 엣지)안의 행동(정보)에 대해서 저장(기록) => ex.장바구니, 로그인
+    - 아이디의 비밀번호를 만들면 장고가 `user_session`에 로그인 상태를 암호화해서 저장함 => 그 암호화된 `session`을 갖고있으면 로그인한 상태가 됨
+        - `expire_date` : `session`의 만료기간 => ex. 자동로그인을 해놨을 때 `expire_date`가 2주면 2주동안 로그인 상태가 유지됨
+    - '쿠키를 허용하시겠습니까?' : '정보를 사용해도 괜찮을까요??'를 의미함
+        - 사이트의 팝업창 (닫기, 오늘 그만 보기) -> 오늘 그만 보기를 누르면 `Cookies/closePopup`이 `done`으로 돼서 새로고침하면 팝업창이 보이지 않음
+        - `github`사이트의 로그인한 상태에서 개발자도구의 `Cookies/user_session`을 지우면 로그아웃된 상태가 됨
+
+- `accounts/views.py`
+```python
+def login(request):
+    if request.method == 'POST':
+        pass
+    else:
+        pass
+```
+- `account/forms.py` : 장고가 만들어놓은 폼 확장
+```python
+class CustomAuthenticationForm(AuthenticationForm):
+    pass
+```
+- `accounts/views.py`
+```python
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
+
+def login(request):
+    if request.method == 'POST':
+        pass
+    else:
+        form = CustomAuthenticationForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'login.html', context)
+```
+- `accounts/templates/login.html` 파일 생성 : 로그인 창 보여주기
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit">
+    </form>
+{% endblock %}
+```
+- `accounts/views.py`
+```python
+from django.contrib.auth import login as auth_login # 로그인을 처리해주는 함수
+# 우리도 login함수를 만들었으므로 겹치지 않기 위해 장고의 login함수를 auth_login으로 불러옴
+
+def login(request):
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request, request.POST) # user 정보 담기
+        if form.is_valid():
+            # user정보를 담았기 때문에 바로 저장하지 않음
+            auth_login(request, form.get_user())
+            return redirect('articles:index')
     else:
         ...
 ```
