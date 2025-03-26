@@ -8,6 +8,8 @@
 
     <a href="{% url 'articles:update' article.id %}" class="btn btn-warning mt-3">update</a>
     <a href="{% url 'articles:delete' article.id %}" class="btn btn-danger mt-3">delete</a>
-    <a href="{% url 'articles:index' %}" class="btn btn-primary mt-3">home</a>
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'articles:index' %}" class="btn btn-primary mt-3">home</a>
+    </div>
     
 {% endblock %}

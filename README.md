@@ -535,3 +535,6 @@ def login(request):
     else:
         ...
 ```
+## 4-9. detail, update, delete
+
+## 4-10. bootstrap
