@@ -8,10 +8,16 @@
 </head>
 <body>
     <nav class="nav">
-        <a href="" class="nav-link disabled">{{user}}</a>
-        <a href="{% url 'accounts:signup' %}" class="nav-link">signup</a>
-        <a href="{% url 'accounts:login' %}" class="nav-link">login</a>
-        <a href="{% url 'accounts:logout' %}" class="nav-link">logout</a>
+        {% if user.is_authenticated %} <!--is_authenticated : 인증됐니?-->
+            <a href="" class="nav-link disabled">{{user}}</a>
+            <a href="{% url 'accounts:logout' %}" class="nav-link">logout</a>
+
+        {% else %}
+            <a href="{% url 'accounts:signup' %}" class="nav-link">signup</a>
+            <a href="{% url 'accounts:login' %}" class="nav-link">login</a>
+
+        {% endif %}
+    
     </nav>
     <div class="container">
         {% block body %}

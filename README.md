@@ -281,3 +281,25 @@ def logout(request):
 
     return redirect('accounts:login')
 ```
+
+## 3-5. 로그인 상태에 따른 navbar 설정
+- `templates/base.html`
+```html
+<body>
+    <nav class="nav">
+        {% if user.is_authenticated %} <!--is_authenticated : 인증됐니?-->
+            <a href="" class="nav-link disabled">{{user}}</a>
+            <a href="{% url 'accounts:logout' %}" class="nav-link">logout</a>
+
+        {% else %}
+            <a href="{% url 'accounts:signup' %}" class="nav-link">signup</a>
+            <a href="{% url 'accounts:login' %}" class="nav-link">login</a>
+
+        {% endif %}
+    
+    </nav>
+    ...
+</body>
+```
+
+# 04. 
