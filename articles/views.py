@@ -27,3 +27,33 @@ def create(request):
         'form': form,
     }
     return render(request, 'create.html', context)
+
+
+def detail(request, id):
+    article = Article.objects.get(id=id)
+
+    context = {
+        'article': article,
+    }
+    return render(request, 'detail.html', context)
+
+
+def update(request, id):
+    article = Article.objects.get(id=id)
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('articles:detail', id=id)
+    else:
+        form = ArticleForm(instance=article)
+    context = {
+        'form': form,
+    }
+    return render(request, 'update.html', context)
+
+
+def delete(request, id):
+    article = Article.objects.get(id=id)
+    article.delete()
+    return redirect('articles:index')
