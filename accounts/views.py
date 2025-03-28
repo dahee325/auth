@@ -3,6 +3,7 @@ from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib.auth import login as auth_login # 로그인을 처리해주는 함수
 # 우리도 login함수를 만들었으므로 겹치지 않기 위해 장고의 login함수를 auth_login으로 불러옴
 from django.contrib.auth import logout as auth_logout
+from .models import User
 
 # Create your views here.
 def signup(request):
@@ -48,3 +49,11 @@ def logout(request):
     auth_logout(request)
 
     return redirect('accounts:login')
+
+
+def profile(request, username):
+    user_profile = User.objects.get(username=username) # 모든 사람의 username은 다름
+    context = {
+        'user_profile': user_profile,
+    }
+    return render(request, 'profile.html', context)

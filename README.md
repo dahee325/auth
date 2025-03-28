@@ -730,6 +730,7 @@ def delete(request, id):
 
 # 06. 라이브러리를 사용하여 Bootstrap 쉽게 하기
 - [bootstrap v5](https://django-bootstrap-v5.readthedocs.io/en/latest/)
+- [bootstrap5](https://django-bootstrap5.readthedocs.io/en/latest/) : 최신버전
 - `pip install django-bootstrap-v5` : django 최신 버전을 지우고 django 4.2 재설치
 - `auth/settings.py`
 ```python
@@ -771,4 +772,61 @@ INSTALLED_APPS = [
     </form>
     
 {% endblock %}
+```
+
+# 07. Profile
+## 7-1. navbar의 username을 누르면 profile로 이동
+- `templates/base.html`
+```html
+<body>
+    <nav class="nav justify-content-center">
+        <a href="{% url 'articles:index' %}">home</a>
+        {% if user.is_authenticated %} <!--is_authenticated : 인증됐니?-->
+            <a href="{% url 'accounts:profile' %}" class="nav-link">{{user}}</a>
+            <a href="{% url 'articles:create' %}" class="nav-link">create</a>
+            <a href="{% url 'accounts:logout' %}" class="nav-link">logout</a>
+
+        {% else %}
+            ...
+
+        {% endif %}
+    
+    </nav>
+    ...
+</body>
+```
+- `accounts/urls.py`
+```python
+urlpatterns = [
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.login, name='login'), 
+    path('logout/', views.logout, name='logout',),
+    path('<username>/', views.profile, name='profile'),
+]
+```
+- `templates/base.html`
+```html
+{% if user.is_authenticated %} <!--is_authenticated : 인증됐니?-->
+            <a href="{% url 'accounts:profile' user.username %}" class="nav-link">{{user}}</a>
+            ...
+
+        {% else %}
+            ...
+
+        {% endif %}
+```
+- `accounts/views.py`
+```python
+from .models import User
+
+def profile(request, username):
+    user_profile = User.objects.get(username=username) # 모든 사람의 username은 다름
+    context = {
+        'user_profile': user_profile,
+    }
+    return render(request, profile.html, context)
+```
+- `accounts/templates/profile.html` 파일 생성
+```html
+
 ```
