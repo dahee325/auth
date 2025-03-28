@@ -538,3 +538,18 @@ def login(request):
 ## 4-9. detail, update, delete
 
 ## 4-10. bootstrap
+
+
+# 05. Comment
+## 5-1. modeling
+- `articles/models.py`
+```python
+class Commet(models.Model):
+    content = models.TextField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
+```
+
+## 5-2. Migration
+- `python manage.py makemigrations`
+- `python manage.py migrate`

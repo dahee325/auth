@@ -14,3 +14,8 @@ class Article(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # 3. get_user_model() 함수 실행
     # user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+class Commet(models.Model):
+    content = models.TextField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
