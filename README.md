@@ -544,7 +544,7 @@ def login(request):
 ## 5-1. modeling
 - `articles/models.py`
 ```python
-class Commet(models.Model):
+class Comment(models.Model):
     content = models.TextField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
@@ -553,3 +553,65 @@ class Commet(models.Model):
 ## 5-2. Migration
 - `python manage.py makemigrations`
 - `python manage.py migrate`
+
+## 5-3. 댓글 빈종이 보여주기
+- `articles/forms.py`
+```python
+class CommentForm(ModelForm):
+    class Meta():
+        model = Comment
+        fields = ('content', )
+```
+- `articles/views.py`
+```python
+def detail(request, id):
+    article = Article.objects.get(id=id)
+    form = CommentForm()
+    context = {
+        'article': article,
+        'form': form, 
+    }
+    return render(request, 'detail.html', context)
+```
+- `articles/templates/detail.html`
+```html
+{% block body %}
+    ...
+    <form action="{% url 'articles:comment_create' article.id %}" method="POST">
+        {% csrf_token%}
+        {{form}}
+        <input type="submit" value="댓글달기">
+    </form>
+    
+{% endblock %}
+```
+## 5-4. Comment_Create
+- `articles/urls.py`
+```python
+urlpatterns = [
+    ...
+
+    path('<int:article_id>/comments/create/', views.comment_create, name='comment_create'),
+]
+```
+- `articles/views.py`
+```python
+@login_required
+def comment_create(request, article_id):
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        
+        # 객체를 저장하는 경우
+        # comment.user = request.user
+        # article = Article.objects.get(id=article_id)
+        # comment.article = article
+
+        # id값을 저장하는 경우 => article을 찾는 행위가 줄어듦
+        comment.user_id = request.user.id
+        comment.article_id = article_id
+
+        comment.save()
+
+        return redirect('article:detail', id=article_id)
+```

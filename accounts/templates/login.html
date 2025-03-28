@@ -1,17 +1,8 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <form action="{% url 'articles:index' %}" method="POST">
+    <form action="" method="POST">
         {% csrf_token %}
-        <!-- <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" placeholder="User_name">
-        </div>
-        <div class="mb-3">
-            <label for="Password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="password">
-        </div>
-        <button type="submit" class="btn btn-primary">로그인</button> -->
         {{form}}
         <input type="submit" value="로그인">
     </form>
