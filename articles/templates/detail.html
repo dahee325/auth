@@ -24,6 +24,9 @@
     <hr>
     {% for comment in article.comment_set.all %}
         <li class="card card-body">{{comment.user.username}} - {{comment.content}}</li>
+        {% if user == comment.user %}
+            <a href="{% url 'articles:comment_delete' article.id comment.id %}" class="btn btn-primary">delete</a>
+        {% endif %}
     {% endfor %}
 
 {% endblock %}

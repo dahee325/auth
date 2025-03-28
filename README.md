@@ -627,3 +627,61 @@ def comment_create(request, article_id):
 
 {% endblock %}
 ```
+
+## 5-6. Comment Delete
+- `articles/templates/detail.html`
+```html
+{% block body %}
+    ...
+    {% for comment in article.comment_set.all %}
+        <li class="card card-body">{{comment.user.username}} - {{comment.content}}</li>
+        <a href="{% url 'articles:comment_delete' article.id comment.id %}">delete</a>
+    {% endfor %}
+
+{% endblock %}
+```
+- `articles/urls.py`
+```python
+urlpatterns = [
+    ...
+
+    path('<int:article_id>/comments/create/', views.comment_create, name='comment_create'),
+    path('<int:article_id>/comments/<int:comment_id>/delete/', views.comment_delete, name='comment_delete'),
+]
+```
+- `articles/views.py`
+```python
+from .models import Article, Comment
+
+def comment_delete(request, article_id, comment_id):
+    comment = Comment.objects.get(id=comment_id)
+    comment.delete()
+
+    return redirect('articles:detail', id=article_id)
+```
+
+## 5-7. 특정 조건 설정
+- 로그인한 사람과 댓글 작성자가 같을 경우 댓글 삭제
+- `articles/templates/detail.html`
+```html
+{% block body %}
+    ...
+    {% for comment in article.comment_set.all %}
+        <li class="card card-body">{{comment.user.username}} - {{comment.content}}</li>
+        {% if user == comment.user %}
+            <a href="{% url 'articles:comment_delete' article.id comment.id %}" class="btn btn-primary">delete</a>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}
+```
+- `articles/views.py`
+```python
+@ login_required
+def comment_delete(request, article_id, comment_id):
+    comment = Comment.objects.get(id=comment_id)
+    if request.user == comment.user:
+        comment.delete()
+
+    return redirect('articles:detail', id=article_id)
+```
