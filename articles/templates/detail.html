@@ -15,8 +15,15 @@
 
     <form action="{% url 'articles:comment_create' article.id %}" method="POST">
         {% csrf_token%}
-        {{form}}
-        <input type="submit" value="댓글달기">
+        <div class="card">
+            {{form}}
+        </div>
+        <input type="submit" value="댓글달기" style="color:blue">
     </form>
-    
+        
+    <hr>
+    {% for comment in article.comment_set.all %}
+        <li class="card card-body">{{comment.user.username}} - {{comment.content}}</li>
+    {% endfor %}
+
 {% endblock %}

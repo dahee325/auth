@@ -615,3 +615,15 @@ def comment_create(request, article_id):
 
         return redirect('article:detail', id=article_id)
 ```
+
+## 5-5. Comment Read
+- `araticles/templates/detail.html`
+```html
+{% block body %}
+    ...
+    {% for comment in article.comment_set.all %}
+        <li class="card card-body">{{comment.user.username}} - {{comment.content}}</li>
+    {% endfor %}
+
+{% endblock %}
+```
