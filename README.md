@@ -727,3 +727,48 @@ def delete(request, id):
 
     return redirect('articles:index')
 ```
+
+# 06. 라이브러리를 사용하여 Bootstrap 쉽게 하기
+- [bootstrap v5](https://django-bootstrap-v5.readthedocs.io/en/latest/)
+- `pip install django-bootstrap-v5` : django 최신 버전을 지우고 django 4.2 재설치
+- `auth/settings.py`
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'accounts',
+    'articles',
+    'bootstrap5',
+]
+```
+- `accounts/templates/signup.html`
+```html
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block body %}
+<form action="" method="POST">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <input type="submit" class="mt-3">
+</form>
+{% endblock %}
+```
+- `accounts/templates/login.html`
+```html
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block body %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {% bootstrap_form form show_label=False %}
+        <input type="submit" value="로그인" class="btn btn-primary">
+    </form>
+    
+{% endblock %}
+```
