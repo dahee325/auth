@@ -53,10 +53,12 @@ def update(request, id):
     }
     return render(request, 'update.html', context)
 
-
+@login_required
 def delete(request, id):
     article = Article.objects.get(id=id)
-    article.delete()
+    if request.user == article.user:
+        article.delete()
+
     return redirect('articles:index')
 
 @login_required

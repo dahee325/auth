@@ -660,8 +660,8 @@ def comment_delete(request, article_id, comment_id):
     return redirect('articles:detail', id=article_id)
 ```
 
-## 5-7. 특정 조건 설정
-- 로그인한 사람과 댓글 작성자가 같을 경우 댓글 삭제
+## 06. 특정 조건 설정
+### 로그인한 사람과 댓글 작성자가 같을 경우 댓글 삭제
 - `articles/templates/detail.html`
 ```html
 {% block body %}
@@ -684,4 +684,27 @@ def comment_delete(request, article_id, comment_id):
         comment.delete()
 
     return redirect('articles:detail', id=article_id)
+```
+
+### 로그인한 사람과 게시글 작성자가 같을 경우 수정/삭제
+- `articles/templates/detail.html`
+```html
+{% block body %}
+    ...
+    {% if user == article.user %}
+    <a href="{% url 'articles:update' article.id %}" class="btn btn-warning mt-3">update</a>
+    <a href="{% url 'articles:delete' article.id %}" class="btn btn-danger mt-3">delete</a>
+    {% endif %}
+    ...
+{% endblock %}
+```
+- `articles/views.py`
+```python
+@login_required
+def delete(request, id):
+    article = Article.objects.get(id=id)
+    if request.user == article.user:
+        article.delete()
+
+    return redirect('articles:index')
 ```
