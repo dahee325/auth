@@ -698,8 +698,27 @@ def comment_delete(request, article_id, comment_id):
     ...
 {% endblock %}
 ```
-- `articles/views.py`
+- `articles/views.py`\
+=> `if request.user != article.user:` 작성자가 아닌 사람이 URL주소로 접근하는 경우 제한 
 ```python
+@login_required
+def update(request, id):
+    article = Article.objects.get(id=id)
+    if request.user != article.user:
+        return redirect('articles:index')
+
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('articles:detail', id=id)
+    else:
+        form = ArticleForm(instance=article)
+    context = {
+        'form': form,
+    }
+    return render(request, 'update.html', context)
+
 @login_required
 def delete(request, id):
     article = Article.objects.get(id=id)

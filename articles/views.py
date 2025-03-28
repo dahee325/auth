@@ -38,9 +38,12 @@ def detail(request, id):
     }
     return render(request, 'detail.html', context)
 
-
+@login_required
 def update(request, id):
     article = Article.objects.get(id=id)
+    if request.user != article.user:
+        return redirect('articles:index')
+
     if request.method == 'POST':
         form = ArticleForm(request.POST, instance=article)
         if form.is_valid():
